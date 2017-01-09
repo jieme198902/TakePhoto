@@ -76,6 +76,16 @@ public class TakePhotoImpl implements TakePhoto {
     private boolean showCompressDialog;
     private ProgressDialog wailLoadDialog;
 
+    /**
+     * 加载dialog
+     *
+     * @return
+     */
+    @Override
+    public ProgressDialog getWailLoadDialog() {
+        return wailLoadDialog;
+    }
+
     public TakePhotoImpl(Activity activity, TakeResultListener listener) {
         contextWrap = TContextWrap.of(activity);
         this.listener = listener;
@@ -161,7 +171,8 @@ public class TakePhotoImpl implements TakePhoto {
                 break;
             case TConstant.RC_PICK_PICTURE_FROM_CAPTURE_CROP://拍取照片,并裁剪
                 if (resultCode == Activity.RESULT_OK) {
-                    if(takePhotoOptions!=null&&takePhotoOptions.isCorrectImage())ImageRotateUtil.of().correctImage(contextWrap.getActivity(), tempUri);
+                    if (takePhotoOptions != null && takePhotoOptions.isCorrectImage())
+                        ImageRotateUtil.of().correctImage(contextWrap.getActivity(), tempUri);
                     try {
                         onCrop(tempUri, Uri.fromFile(new File(TUriParse.parseOwnUri(contextWrap.getActivity(), outPutUri))), cropOptions);
                     } catch (TException e) {
@@ -174,7 +185,8 @@ public class TakePhotoImpl implements TakePhoto {
                 break;
             case TConstant.RC_PICK_PICTURE_FROM_CAPTURE://拍取照片
                 if (resultCode == Activity.RESULT_OK) {
-                    if(takePhotoOptions!=null&&takePhotoOptions.isCorrectImage())ImageRotateUtil.of().correctImage(contextWrap.getActivity(), outPutUri);
+                    if (takePhotoOptions != null && takePhotoOptions.isCorrectImage())
+                        ImageRotateUtil.of().correctImage(contextWrap.getActivity(), outPutUri);
                     try {
                         takeResult(TResult.of(TImage.of(TUriParse.getFilePathWithUri(outPutUri, contextWrap.getActivity()), fromType)));
                     } catch (TException e) {
@@ -416,7 +428,7 @@ public class TakePhotoImpl implements TakePhoto {
             CompressImageImpl.of(contextWrap.getActivity(), compressConfig, result.getImages(), new CompressImage.CompressListener() {
                 @Override
                 public void onCompressSuccess(ArrayList<TImage> images) {
-                    if(!compressConfig.isEnableReserveRaw()) {
+                    if (!compressConfig.isEnableReserveRaw()) {
                         deleteRawFile(images);
                     }
                     handleTakeCallBack(result);
@@ -426,7 +438,7 @@ public class TakePhotoImpl implements TakePhoto {
 
                 @Override
                 public void onCompressFailed(ArrayList<TImage> images, String msg) {
-                    if(!compressConfig.isEnableReserveRaw()) {
+                    if (!compressConfig.isEnableReserveRaw()) {
                         deleteRawFile(images);
                     }
                     handleTakeCallBack(TResult.of(images), String.format(contextWrap.getActivity().getResources().getString(R.string.tip_compress_failed), message.length > 0 ? message[0] : "", msg, result.getImage().getCompressPath()));
@@ -438,8 +450,8 @@ public class TakePhotoImpl implements TakePhoto {
     }
 
     private void deleteRawFile(ArrayList<TImage> images) {
-        for(TImage image : images) {
-            if(TImage.FromType.CAMERA == fromType) {
+        for (TImage image : images) {
+            if (TImage.FromType.CAMERA == fromType) {
                 TFileUtils.delete(image.getOriginalPath());
                 image.setOriginalPath("");
             }
