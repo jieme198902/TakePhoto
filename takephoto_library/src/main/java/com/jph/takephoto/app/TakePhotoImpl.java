@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.darsh.multipleimageselect.helpers.Constants;
@@ -244,6 +245,7 @@ public class TakePhotoImpl implements TakePhoto {
             case TConstant.RC_PICK_MULTIPLE://多选图片返回结果
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ArrayList<Image> images = data.getParcelableArrayListExtra(Constants.INTENT_EXTRA_IMAGES);
+
                     if (cropOptions != null) {
                         try {
                             onCrop(MultipleCrop.of(TUtils.convertImageToUri(contextWrap.getActivity(), images), contextWrap.getActivity(), fromType), cropOptions);

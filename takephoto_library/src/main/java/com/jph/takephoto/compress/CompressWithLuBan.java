@@ -1,6 +1,7 @@
 package com.jph.takephoto.compress;
 
 import android.content.Context;
+
 import com.jph.takephoto.model.LubanOptions;
 import com.jph.takephoto.model.TImage;
 
@@ -29,7 +30,7 @@ public class CompressWithLuBan implements CompressImage {
     private ArrayList<File> files = new ArrayList<>();
 
     public CompressWithLuBan(Context context, CompressConfig config, ArrayList<TImage> images, CompressListener listener) {
-        options=config.getLubanOptions();
+        options = config.getLubanOptions();
         this.images = images;
         this.listener = listener;
         this.context = context;
@@ -56,11 +57,10 @@ public class CompressWithLuBan implements CompressImage {
     }
 
     private void compressOne() {
-        Luban.get(context).putGear(options.getGear())
-                .load(files.get(0))
+        Luban.compress(context,files.get(0)).putGear(options.getGear())
                 .setMaxHeight(options.getMaxHeight())
                 .setMaxWidth(options.getMaxWidth())
-                .setMaxSize(options.getMaxSize()/1000)
+                .setMaxSize(options.getMaxSize() / 1000)
                 .launch(new OnCompressListener() {
                     @Override
                     public void onStart() {
@@ -69,7 +69,7 @@ public class CompressWithLuBan implements CompressImage {
 
                     @Override
                     public void onSuccess(File file) {
-                        TImage image=images.get(0);
+                        TImage image = images.get(0);
                         image.setCompressPath(file.getPath());
                         image.setCompressed(true);
                         listener.onCompressSuccess(images);
@@ -83,8 +83,7 @@ public class CompressWithLuBan implements CompressImage {
     }
 
     private void compressMulti() {
-        Luban.get(context).putGear(options.getGear())
-                .load(files)
+        Luban.compress(context,files).putGear(options.getGear())
                 .setMaxSize(options.getMaxSize()/1000)                // limit the final image size（unit：Kb）
                 .setMaxHeight(options.getMaxHeight())             // limit image height
                 .setMaxWidth(options.getMaxWidth())
@@ -108,7 +107,7 @@ public class CompressWithLuBan implements CompressImage {
 
     private void handleCompressCallBack(List<File> files) {
         for (int i = 0, j = images.size(); i < j; i++) {
-            TImage image=images.get(i);
+            TImage image = images.get(i);
             image.setCompressed(true);
             image.setCompressPath(files.get(i).getPath());
         }
