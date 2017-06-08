@@ -9,9 +9,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.shaohui.advancedluban.Luban;
-import me.shaohui.advancedluban.OnCompressListener;
-import me.shaohui.advancedluban.OnMultiCompressListener;
+import top.zibin.luban.Luban;
+import top.zibin.luban.OnCompressListener;
+
 
 /**
  * 压缩照片,采用luban
@@ -57,11 +57,8 @@ public class CompressWithLuBan implements CompressImage {
     }
 
     private void compressOne() {
-        Luban.compress(context,files.get(0)).putGear(options.getGear())
-                .setMaxHeight(options.getMaxHeight())
-                .setMaxWidth(options.getMaxWidth())
-                .setMaxSize(options.getMaxSize() / 1000)
-                .launch(new OnCompressListener() {
+        Luban.get(context).load(files.get(0)).putGear(options.getGear())
+                .setCompressListener(new OnCompressListener() {
                     @Override
                     public void onStart() {
 
@@ -79,30 +76,33 @@ public class CompressWithLuBan implements CompressImage {
                     public void onError(Throwable e) {
                         listener.onCompressFailed(images, e.getMessage() + " is compress failures");
                     }
-                });
+                }).launch();
     }
 
     private void compressMulti() {
-        Luban.compress(context,files).putGear(options.getGear())
-                .setMaxSize(options.getMaxSize()/1000)                // limit the final image size（unit：Kb）
-                .setMaxHeight(options.getMaxHeight())             // limit image height
-                .setMaxWidth(options.getMaxWidth())
-                .launch(new OnMultiCompressListener() {
-                    @Override
-                    public void onStart() {
+        final List<File> fileList = new ArrayList<>();
+        for (File file : files) {
+            Luban.get(context).load(file).putGear(options.getGear())
+                    .setCompressListener(new OnCompressListener() {
+                        @Override
+                        public void onStart() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onSuccess(List<File> fileList) {
-                        handleCompressCallBack(fileList);
-                    }
+                        @Override
+                        public void onSuccess(File file1) {
+                            fileList.add(file1);
+                            if (fileList.size() == files.size())
+                                handleCompressCallBack(fileList);
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        listener.onCompressFailed(images, e.getMessage() + " is compress failures");
-                    }
-                });
+                        @Override
+                        public void onError(Throwable e) {
+                            listener.onCompressFailed(images, e.getMessage() + " is compress failures");
+                        }
+                    });
+        }
+
     }
 
     private void handleCompressCallBack(List<File> files) {

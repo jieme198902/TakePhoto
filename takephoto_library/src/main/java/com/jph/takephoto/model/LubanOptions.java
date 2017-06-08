@@ -2,7 +2,8 @@ package com.jph.takephoto.model;
 
 import java.io.Serializable;
 
-import me.shaohui.advancedluban.Luban;
+import top.zibin.luban.Luban;
+
 
 /**
  * Luban配置类
@@ -20,7 +21,7 @@ public class LubanOptions implements Serializable{
     private int maxSize;
     private int maxHeight;
     private int maxWidth;
-    private int gear= Luban.CUSTOM_GEAR;
+    private int gear= Luban.THIRD_GEAR;
     private LubanOptions(){}
 
     public int getMaxSize() {

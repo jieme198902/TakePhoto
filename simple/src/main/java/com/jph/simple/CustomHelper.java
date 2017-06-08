@@ -14,7 +14,7 @@ import com.jph.takephoto.model.TakePhotoOptions;
 
 import java.io.File;
 
-import me.shaohui.advancedluban.Luban;
+import top.zibin.luban.Luban;
 
 
 /**
@@ -144,7 +144,7 @@ public class CustomHelper{
                     .create();
         }else {
             LubanOptions option=new LubanOptions.Builder()
-                    .setGear(Luban.CUSTOM_GEAR)
+                    .setGear(Luban.THIRD_GEAR)
                     .setMaxHeight(height)
                     .setMaxWidth(width)
                     .setMaxSize(maxSize)
