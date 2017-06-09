@@ -196,7 +196,7 @@ public class TUtils {
         if (progressTitle != null && progressTitle.length > 0)
             title = progressTitle[0];
         ProgressDialog progressDialog = new ProgressDialog(activity);
-        progressDialog.setTitle(title);
+        progressDialog.setMessage(title);
         progressDialog.setCancelable(false);
         progressDialog.show();
         return progressDialog;
