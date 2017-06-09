@@ -7,9 +7,15 @@ import android.content.Context;
  * @author JPH
  * Date 2016/6/7 0007 9:39
  */
-public class TConstant {
+public final class TConstant {
 
-
+    private TConstant(){}
+    public final static int takePhotoSuccessRequest = 111;
+    public final static int takePhotoSuccessResult = 1110;
+    /**
+     *
+     */
+    public final static String _entity ="entity";
     /**
      * request Code 裁剪照片
      **/
