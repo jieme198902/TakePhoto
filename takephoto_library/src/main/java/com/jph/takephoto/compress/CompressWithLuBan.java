@@ -9,6 +9,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import top.zibin.luban.Luban;
 import top.zibin.luban.OnCompressListener;
 
@@ -80,29 +85,34 @@ public class CompressWithLuBan implements CompressImage {
     }
 
     private void compressMulti() {
-        final List<File> fileList = new ArrayList<>();
+        final List<Observable<File>> observables = new ArrayList<>();
         for (File file : files) {
-            Luban.get(context).load(file).putGear(options.getGear())
-                    .setCompressListener(new OnCompressListener() {
-                        @Override
-                        public void onStart() {
-
-                        }
-
-                        @Override
-                        public void onSuccess(File file1) {
-                            fileList.add(file1);
-                            if (fileList.size() == files.size())
-                                handleCompressCallBack(fileList);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            listener.onCompressFailed(images, e.getMessage() + " is compress failures");
-                        }
-                    });
+            observables.add(Luban.get(context).load(file).putGear(options.getGear()).asObservable());
         }
-
+        Observable
+                .zip(observables, new Function<Object[], List<File>>() {
+                    @Override
+                    public List<File> apply(Object[] files) {
+                        List<File> zipFiles = new ArrayList<>();
+                        for (Object obj : files) {
+                            zipFiles.add((File) obj);
+                        }
+                        return zipFiles;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<List<File>>() {
+                    @Override
+                    public void accept(List<File> zipFiles) throws Exception {
+                        handleCompressCallBack(zipFiles);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        listener.onCompressFailed(images, throwable.getMessage() + " is compress failures");
+                    }
+                });
     }
 
     private void handleCompressCallBack(List<File> files) {
